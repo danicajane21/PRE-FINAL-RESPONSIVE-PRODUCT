@@ -280,6 +280,38 @@
 	margin-bottom: 2rem;
 }
 
+.product-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	justify-content: center;
+	margin: 0 auto 2rem;
+}
+
+.product-filter-button {
+	background: #fff8ee;
+	border: 1px solid #9b2d2d;
+	border-radius: 999px;
+	color: #7b2424;
+	cursor: pointer;
+	font: inherit;
+	font-weight: 700;
+	min-height: 44px;
+	padding: 0.6rem 1.1rem;
+	transition: background-color 150ms ease, color 150ms ease;
+}
+
+.product-filter-button:hover,
+.product-filter-button[aria-pressed="true"] {
+	background: #9b2d2d;
+	color: #ffffff;
+}
+
+.product-filter-button:focus-visible {
+	outline: 3px solid #7b4318;
+	outline-offset: 2px;
+}
+
 .add-product-section {
 	background: #fff8ee;
 	border: 1px solid #d3b89b;

@@ -17,6 +17,8 @@ type ProductForm = Omit<Product, 'id' | 'price' | 'rating'> & {
   rating: string;
 };
 
+type ProductFilter = 'All' | 'Burgers' | 'Spaghetti' | 'Carbonara';
+
 const initialProducts: Product[] = [
   {
     id: 1,
@@ -27,7 +29,7 @@ const initialProducts: Product[] = [
     price: 99,
     rating: 5,
     image:
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+      'https://static.vecteezy.com/system/resources/previews/066/396/891/non_2x/delicious-burger-with-cheese-tomato-and-lettuce-on-isolated-transparent-background-png.png',
   },
   {
     id: 2,
@@ -38,7 +40,7 @@ const initialProducts: Product[] = [
     price: 85,
     rating: 4,
     image:
-      'https://images.unsplash.com/photo-1550317138-10000687a72b?auto=format&fit=crop&w=800&q=80',
+      'https://assets.epicurious.com/photos/5c745a108918ee7ab68daf79/1:1/w_2560%2Cc_limit/Smashburger-recipe-120219.jpg',
   },
   {
     id: 3,
@@ -49,7 +51,7 @@ const initialProducts: Product[] = [
     price: 95,
     rating: 4,
     image:
-      'https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=800&q=80',
+      'https://simplehomeedit.com/wp-content/uploads/2022/09/Southern-Fried-Chicken-Burger-1.webp',
   },
    {
     id: 4,
@@ -60,9 +62,44 @@ const initialProducts: Product[] = [
     price: 95,
     rating: 4,
     image:
-      'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=800&q=80',
+      'https://theeburgerdude.com/wp-content/uploads/2023/06/Patty-Melt-Feature-02-1024x754.jpg',
+  },
+  {
+    id: 5,
+    name: 'Burger with Fries',
+    category: 'Burgers',
+    description: 'A juicy grilled burger served with a side of crispy golden fries.',
+    specification: 'Beef patty, lettuce, tomato, cheese, house sauce, and fries.',
+    price: 125,
+    rating: 5,
+    image:
+      'https://friendlysrestaurants.com/assets/live/img/production/detail/menu/lunch-dinner_999-combohs_bacon-cheeseburger-fries.jpg',
+  },
+  {
+    id: 6,
+    name: 'Spaghetti',
+    category: 'Spaghetti',
+    description: 'Classic spaghetti tossed in a rich tomato sauce.',
+    specification: 'Spaghetti pasta, tomato sauce, herbs, and parmesan.',
+    price: 110,
+    rating: 5,
+    image:
+      'https://curiousflavors.com/wp-content/uploads/2022/09/Untitled-design-2022-09-29T132112.477-1.jpg',
+  },
+  {
+    id: 7,
+    name: 'Carbonara',
+    category: 'Carbonara',
+    description: 'Creamy, comforting pasta with a savory parmesan sauce.',
+    specification: 'Pasta, creamy parmesan sauce, bacon, and black pepper.',
+    price: 120,
+    rating: 5,
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3XtvnO4710Gap390bRCg-nxE80oot54nUnvCSXNdcKQSQ7gU-k7EkIFA&s=10',
   },
 ];
+
+const productFilters: ProductFilter[] = ['All', 'Burgers', 'Spaghetti', 'Carbonara'];
 
 const emptyProductForm: ProductForm = {
   image: '',
@@ -77,11 +114,17 @@ const emptyProductForm: ProductForm = {
 export default function ProductComponent() {
   const [activePage, setActivePage] = useState<'home' | 'about' | 'menu' | 'contact' | 'cart' | 'add-product'>('home');
   const [products, setProducts] = useState(initialProducts);
+  const [activeFilter, setActiveFilter] = useState<ProductFilter>('All');
   const [cartItems, setCartItems] = useState<Record<number, number>>({});
   const [productForm, setProductForm] = useState(emptyProductForm);
   const [formError, setFormError] = useState('');
   const cartCount = Object.values(cartItems).reduce((total, quantity) => total + quantity, 0);
   const itemsInCart = products.filter((product) => cartItems[product.id] > 0);
+  const filteredProducts = products.filter((product) => {
+    if (activeFilter === 'All') return true;
+    if (activeFilter === 'Burgers') return product.category.toLowerCase().includes('burger');
+    return product.category.toLowerCase() === activeFilter.toLowerCase();
+  });
   const cartTotal = itemsInCart.reduce(
     (total, product) => total + product.price * cartItems[product.id],
     0,
@@ -235,10 +278,23 @@ export default function ProductComponent() {
 
         {activePage === 'menu' && (
           <section className="menu-section">
-            <h1>Our Crazy Burgers</h1>
-            <h2>Delicious Burgers Made with Love</h2>
+            <h1>Our Menu</h1>
+            <h2>Delicious food made with love</h2>
+            <div className="product-filters" role="group" aria-label="Filter menu by category">
+              {productFilters.map((filter) => (
+                <button
+                  key={filter}
+                  className="product-filter-button"
+                  type="button"
+                  aria-pressed={activeFilter === filter}
+                  onClick={() => setActiveFilter(filter)}
+                >
+                  {filter === 'All' ? 'All Items' : filter}
+                </button>
+              ))}
+            </div>
             <div className="burger-list">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <div key={product.id} className="burger-card">
                   <img src={product.image} alt={product.name} />
                   <div className="burger-info">
@@ -368,7 +424,7 @@ export default function ProductComponent() {
             </button>
           </div>
           {itemsInCart.length === 0 ? (
-            <p className="empty-cart">Your cart is empty. Add a burger to get started.</p>
+            <p className="empty-cart">Your cart is empty. Go to menu to enjoy your day!.</p>
           ) : (
             <>
               <ul className="cart-items">
